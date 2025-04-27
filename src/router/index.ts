@@ -1,13 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import Home from '../views/Home.vue';
 import OngoingPurchases from '../views/OngoingPurchases.vue';
 import CreditRequest from '../views/CreditRequest.vue';
 import CompletePurchase from '../views/CompletePurchase.vue';
+import PayNow from '../views/PayNow.vue';
+import ApplyCreditFacility from '../views/ApplyCreditFacility.vue';
 import blank from "@/views/Blank.vue";
 
 const routes = [
   {
     path: '/',
-    redirect: '/pending-credits', // Redirect home to ongoing purchases
+    name: 'Home',
+    component: Home,
   },
   {
     path: '/ongoing-purchases',
@@ -31,8 +35,13 @@ const routes = [
   },
   {
     path: '/pay-now',
-    name: 'Blank',
-    component: blank,
+    name: 'PayNow',
+    component: PayNow,
+  },
+  {
+    path: '/apply-credit',
+    name: 'ApplyCreditFacility',
+    component: ApplyCreditFacility,
   },
 ];
 
