@@ -1,17 +1,10 @@
 <template>
-  <div class="pay-now">
-    <div class="sub-nav">
-      <router-link to="/" class="home-icon">
-        <img src="@/assets/home-icon.png" alt="Home Icon" />
-      </router-link>
-      <router-link to="/pending-credits" class="tab">Pending Credits</router-link>
-      <router-link to="/ongoing-purchases" class="tab">Ongoing Purchases/Credits</router-link>
-      <router-link to="/completed-purchases" class="tab">Completed Purchases/Credits</router-link>
-    </div>
-    <h2>Make Payment</h2>
-    <div class="payment-form">
+  <div class="pay-now-overlay">
+    <div class="pay-now-modal">
+      <button class="close-button" @click="cancel">✖</button>
+      <h2>Make Payment</h2>
       <div class="form-group">
-        <label for="card-number">Card Number</label>
+        <label for="card-number">Card Number *</label>
         <input
           type="text"
           id="card-number"
@@ -22,7 +15,7 @@
         />
       </div>
       <div class="form-group">
-        <label for="cardholder-name">Cardholder Name</label>
+        <label for="cardholder-name">Cardholder Name *</label>
         <input
           type="text"
           id="cardholder-name"
@@ -30,30 +23,31 @@
           placeholder="John Doe"
         />
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="expiry">Expiry Date (MM/YY)</label>
-          <input
-            type="text"
-            id="expiry"
-            v-model="expiry"
-            placeholder="MM/YY"
-            maxlength="5"
-            @input="formatExpiry"
-          />
-        </div>
-        <div class="form-group">
-          <label for="cvv">CVV</label>
-          <input
-            type="text"
-            id="cvv"
-            v-model="cvv"
-            placeholder="123"
-            maxlength="3"
-          />
-        </div>
+      <div class="form-group">
+        <label for="expiry">Expiry Date (MM/YY) *</label>
+        <input
+          type="text"
+          id="expiry"
+          v-model="expiry"
+          placeholder="MM/YY"
+          maxlength="5"
+          @input="formatExpiry"
+        />
       </div>
-      <button class="pay-button" @click="processPayment">Do Payment</button>
+      <div class="form-group">
+        <label for="cvv">CVV *</label>
+        <input
+          type="text"
+          id="cvv"
+          v-model="cvv"
+          placeholder="123"
+          maxlength="3"
+        />
+      </div>
+      <div class="actions">
+        <button class="cancel-button" @click="cancel">Cancel</button>
+        <button class="pay-button" @click="processPayment">Do Payment</button>
+      </div>
     </div>
     <div v-if="showSuccess" class="success-popup">
       <div class="popup-content">
@@ -93,7 +87,6 @@ export default defineComponent({
       this.expiry = value;
     },
     processPayment() {
-      // Basic validation
       if (
         this.cardNumber.replace(/\s/g, '').length === 16 &&
         this.cardholderName.trim() &&
@@ -110,69 +103,108 @@ export default defineComponent({
       this.showSuccess = false;
       this.$router.push('/ongoing-purchases');
     },
+    cancel() {
+      this.$router.push('/ongoing-purchases');
+    },
   },
 });
 </script>
 
 <style scoped>
-.pay-now {
+.pay-now-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.pay-now-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff5c5c;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
 }
 
 h2 {
   color: #4a4a8d;
-  font-size: 18px;
+  font-size: 24px;
   margin-bottom: 20px;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-}
-
-.payment-form {
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-.form-row {
-  display: flex;
-  gap: 20px;
-}
-
-.form-row .form-group {
-  flex: 1;
-}
-
-label {
+.form-group label {
   display: block;
   margin-bottom: 5px;
   color: #333;
   font-size: 14px;
 }
 
-input {
+.form-group input {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 20px;
   font-size: 14px;
 }
 
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.cancel-button,
 .pay-button {
-  padding: 10px 20px;
-  border: none;
-  background: #28a745;
-  color: #fff;
-  border-radius: 5px;
+  padding: 10px 30px;
+  border-radius: 20px;
+  font-size: 14px;
   cursor: pointer;
-  font-size: 16px;
-  width: 100%;
+}
+
+.cancel-button {
+  background: #fff;
+  border: 1px solid #28a745;
+  color: #28a745;
+}
+
+.cancel-button:hover {
+  background: #f5f5f5;
+}
+
+.pay-button {
+  background: #28a745;
+  border: none;
+  color: #fff;
 }
 
 .pay-button:hover {
@@ -189,6 +221,7 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1001;
 }
 
 .popup-content {
@@ -197,6 +230,7 @@ input {
   border-radius: 8px;
   text-align: center;
   max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .popup-content h3 {
@@ -216,36 +250,5 @@ input {
   color: #fff;
   border-radius: 5px;
   cursor: pointer;
-}
-
-.sub-nav {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 0;
-}
-
-.home-icon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.tab {
-  padding: 10px 20px;
-  border: 1px solid #ddd;
-  background: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  border-radius: 5px;
-  text-decoration: none;
-  color: #333;
-}
-
-.tab.router-link-active {
-  background: #28a745;
-  color: #fff;
-  border: none;
 }
 </style>
